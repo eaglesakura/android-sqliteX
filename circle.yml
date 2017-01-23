@@ -1,6 +1,7 @@
 checkout:
   post:
     - chmod 755 ./gradlew
+    - chmod 755 ./script/ndk-build.sh
 machine:
   timezone:
     Asia/Tokyo
@@ -8,15 +9,19 @@ machine:
     version: oraclejdk8
   environment:
     ANDROID_HOME: /home/ubuntu/android-sdk
+    ANDROID_NDK_HOME: /home/ubuntu/android-ndk
     GRADLE_OPTS: -Xmx2G -Dorg.gradle.daemon=true
     JAVA_OPTS: -Dfile.encoding=UTF-8 -Xms1024m -Xmx2048m -XX:MaxPermSize=2048m
 dependencies:
   cache_directories:
     - "/home/ubuntu/android-sdk"
+    - "/home/ubuntu/android-ndk"
   override:
     - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/install-android-sdk-auto.sh)"
+    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/install-android-ndk-r13b.sh)"
 test:
   override:
+    - ./script/ndk-build.sh
     - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/build-test.sh)"
 deployment:
   canary:
