@@ -47,7 +47,7 @@ android {
         jniLibs.srcDirs = ["src/main/libs"]
     }
     lintOptions {
-        disable "InvalidPackage"
+        abortOnError false
     }
 }
 
