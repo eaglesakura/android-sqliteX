@@ -1,0 +1,10 @@
+/build
+local.properties
+cygdrive/
+.gradle/
+.idea/
+*.iml
+/ci-release
+/maven
+obj/
+src/main/libs/
