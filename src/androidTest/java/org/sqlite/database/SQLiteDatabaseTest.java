@@ -127,8 +127,6 @@ public class SQLiteDatabaseTest extends DeviceTestCase {
         try {
             db = SQLiteDatabase.openOrCreateDatabase(DB_PATH.getPath(), null);
             string_from_t1_x(db);
-        } catch (SQLiteDatabaseCorruptException e) {
-            res = "encrypted";
         } finally {
             db.close();
         }
@@ -139,6 +137,8 @@ public class SQLiteDatabaseTest extends DeviceTestCase {
             db = SQLiteDatabase.openOrCreateDatabase(DB_PATH.getPath(), null);
             db.execSQL("PRAGMA key = 'otherkey'");
             string_from_t1_x(db);
+
+            fail("Not Error");
         } catch (SQLiteDatabaseCorruptException e) {
             res = "encrypted";
         } finally {

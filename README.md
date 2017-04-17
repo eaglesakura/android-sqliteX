@@ -38,7 +38,7 @@ repositories {
 }
 
 dependencies {
-    // add library
+    // add library, org.sqlite = 526 methods
     compile 'com.eaglesakura:android-sqliteX:3.16.1.+'
 }
 ```
