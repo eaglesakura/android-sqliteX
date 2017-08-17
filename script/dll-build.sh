@@ -32,6 +32,7 @@ for file in `find ../src/main/jni/ -name "*.cpp" -type f`; do
      -Wno-parentheses \
      -Wno-maybe-uninitialized \
      -Wno-conversion-null \
+     -DNDEBUG \
      -c $file
 done
 
@@ -58,6 +59,7 @@ for file in `find ../src/main/jni/ -name "*.c" -type f`; do
      -Wno-int-to-pointer-cast \
      -Wno-parentheses \
      -Wno-maybe-uninitialized \
+     -DNDEBUG \
      -c $file
 done
 
