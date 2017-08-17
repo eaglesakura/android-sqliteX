@@ -299,20 +299,25 @@ void jniLogException(C_JNIEnv* env, int priority, const char* tag, jthrowable ex
 }
 
 const char* jniStrError(int errnum, char* buf, size_t buflen) {
-#if __GLIBC__
-    // Note: glibc has a nonstandard strerror_r that returns char* rather than POSIX's int.
-    // char *strerror_r(int errnum, char *buf, size_t n);
-    return strerror_r(errnum, buf, buflen);
-#else
-    int rc = strerror_r(errnum, buf, buflen);
-    if (rc != 0) {
-        // (POSIX only guarantees a value other than 0. The safest
-        // way to implement this function is to use C++ and overload on the
-        // type of strerror_r to accurately distinguish GNU from POSIX.)
-        snprintf(buf, buflen, "errno %d", errnum);
-    }
+#ifdef __MINGW32__
+    snprintf(buf, buflen, "errno %d", errnum);
     return buf;
-#endif
+#else /* __MINGW32__ */
+  #if __GLIBC__
+      // Note: glibc has a nonstandard strerror_r that returns char* rather than POSIX's int.
+      // char *strerror_r(int errnum, char *buf, size_t n);
+      return strerror_r(errnum, buf, buflen);
+  #else
+      int rc = strerror_r(errnum, buf, buflen);
+      if (rc != 0) {
+          // (POSIX only guarantees a value other than 0. The safest
+          // way to implement this function is to use C++ and overload on the
+          // type of strerror_r to accurately distinguish GNU from POSIX.)
+          snprintf(buf, buflen, "errno %d", errnum);
+      }
+      return buf;
+  #endif
+#endif /* __MINGW32__ */
 }
 
 jobject jniCreateFileDescriptor(C_JNIEnv* env, int fd) {
