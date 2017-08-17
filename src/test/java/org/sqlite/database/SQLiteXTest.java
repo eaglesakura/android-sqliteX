@@ -185,6 +185,33 @@ public class SQLiteXTest extends UnitTestCase {
         assertEquals(db_is_encrypted(), "unencrypted");
     }
 
+    @Test
+    public void json_test() throws Throwable {
+        SQLiteDatabase.deleteDatabase(DB_PATH);
+        SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(DB_PATH, null);
+
+        // insert value
+        {
+            db.execSQL("CREATE TABLE t1(x)");
+            db.execSQL("BEGIN");
+            db.execSQL("INSERT INTO t1 VALUES ('{\"key1\": \"value1\", \"key2\": \"value2\"}')");
+            db.execSQL("COMMIT");
+        }
+
+        // check value
+        try (Cursor c = db.rawQuery("SELECT x FROM t1", null)) {
+            assertTrue(c.moveToFirst());
+            assertEquals(c.getString(0), "{\"key1\": \"value1\", \"key2\": \"value2\"}");
+        }
+
+        // check json value
+        try (Cursor c = db.rawQuery("SELECT json_extract(x, \"$.key1\") as key1, json_extract(x, \"$.key2\") as key2 FROM t1", null)) {
+            assertTrue(c.moveToFirst());
+            assertEquals(c.getString(0), "value1");
+            assertEquals(c.getString(1), "value2");
+        }
+    }
+
     /**
      * * Use a Cursor to loop through the results of a SELECT query.
      */
