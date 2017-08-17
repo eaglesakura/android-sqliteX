@@ -11,6 +11,7 @@ cd .dll
 for file in `find ../src/main/jni/ -name "*.cpp" -type f`; do
   echo $file
   x86_64-w64-mingw32-g++ \
+     -O2 \
      -I../src/main/jni/ \
      -I../src/main/jni/sqlite \
      -I../src/main/jni/sqlite/nativehelper \
@@ -39,6 +40,7 @@ done
 for file in `find ../src/main/jni/ -name "*.c" -type f`; do
   echo $file
   x86_64-w64-mingw32-gcc \
+     -O2 \
      -I../src/main/jni/ \
      -I../src/main/jni/sqlite \
      -I../src/main/jni/sqlite/nativehelper \
@@ -65,6 +67,7 @@ done
 
 # Link library
 x86_64-w64-mingw32-g++ \
+    -O2 \
     -static-libgcc -static-libstdc++  -static \
     --shared -o sqliteX.dll \
     android_database_SQLiteCommon.o \

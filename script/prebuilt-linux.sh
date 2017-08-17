@@ -11,6 +11,7 @@ cd .linux.so
 for file in `find ../src/main/jni/ -name "*.cpp" -type f`; do
   echo $file
   g++ \
+     -O2 \
      -fPIC \
      -I../src/main/jni/ \
      -I../src/main/jni/sqlite \
@@ -40,6 +41,7 @@ done
 for file in `find ../src/main/jni/ -name "*.c" -type f`; do
   echo $file
   gcc \
+     -O2 \
      -fPIC \
      -I../src/main/jni/ \
      -I../src/main/jni/sqlite \
@@ -67,6 +69,7 @@ done
 
 # Link library
 g++ \
+    -O2 \
     -static-libgcc -static-libstdc++ -fPIC \
     --shared -o libsqliteX.so \
     android_database_SQLiteCommon.o \
