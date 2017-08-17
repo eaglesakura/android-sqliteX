@@ -9,4 +9,6 @@ cygdrive/
 obj/
 src/main/libs/
 .dll/
-sqliteX.dll
+/sqliteX.dll
+/libsqliteX.so
+/.linux.so

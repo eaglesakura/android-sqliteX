@@ -1,16 +1,17 @@
 #! /bin/bash -eu
-# build by cygwin
-if [[ $(uname) != CYGWIN* ]]; then
+# build Ubuntu
+if [[ $(uname) != *Linux* ]]; then
     exit 1
 fi
 
-rm -rf .dll/
-mkdir .dll
-cd .dll
+rm -rf .linux.so/
+mkdir .linux.so
+cd .linux.so
 
 for file in `find ../src/main/jni/ -name "*.cpp" -type f`; do
   echo $file
-  x86_64-w64-mingw32-g++ \
+  g++ \
+     -fPIC \
      -I../src/main/jni/ \
      -I../src/main/jni/sqlite \
      -I../src/main/jni/sqlite/nativehelper \
@@ -37,7 +38,8 @@ done
 
 for file in `find ../src/main/jni/ -name "*.c" -type f`; do
   echo $file
-  x86_64-w64-mingw32-gcc \
+  gcc \
+     -fPIC \
      -I../src/main/jni/ \
      -I../src/main/jni/sqlite \
      -I../src/main/jni/sqlite/nativehelper \
@@ -62,9 +64,9 @@ for file in `find ../src/main/jni/ -name "*.c" -type f`; do
 done
 
 # Link library
-x86_64-w64-mingw32-g++ \
-    -static-libgcc -static-libstdc++  -static \
-    --shared -o sqliteX.dll \
+g++ \
+    -static-libgcc -static-libstdc++ -fPIC \
+    --shared -o libsqliteX.so \
     android_database_SQLiteCommon.o \
     android_database_SQLiteConnection.o \
     android_database_SQLiteDebug.o \
@@ -73,7 +75,7 @@ x86_64-w64-mingw32-g++ \
     JniConstants.o \
     sqlite3.o
 
-x86_64-w64-mingw32-objdump -p sqliteX.dll  | findstr "dll"
+objdump -p libsqliteX.so | grep "so"
 
-cp -f sqliteX.dll ../
+cp -f libsqliteX.so ../
 echo "Build completed!"
