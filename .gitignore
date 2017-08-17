@@ -13,3 +13,4 @@ src/main/libs/
 /*.so
 /.linux.so
 /*.dylib
+.DS_Store
