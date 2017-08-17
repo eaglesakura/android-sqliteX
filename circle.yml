@@ -25,7 +25,6 @@ test:
     - |
       ./script/prebuilt-linux.sh
       export LD_LIBRARY_PATH=`pwd`:$LD_LIBRARY_PATH
-      echo "skip tests"
       sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/build-test.sh)"
 deployment:
   release:
