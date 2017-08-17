@@ -1,7 +1,7 @@
 checkout:
   post:
     - chmod 755 ./gradlew
-    - chmod 755 ./script/ndk-build.sh
+    - chmod -R 755 ./script
 machine:
   timezone:
     Asia/Tokyo
@@ -22,8 +22,11 @@ dependencies:
 test:
   override:
     - ./script/ndk-build.sh
-    - echo "skip tests"
-#    - sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/build-test.sh)"
+    - |
+      ./script/prebuilt-linux.sh
+      export LD_LIBRARY_PATH=`pwd`:$LD_LIBRARY_PATH
+      echo "skip tests"
+      sh -c "$(curl -fsSL https://raw.githubusercontent.com/eaglesakura/build-dependencies/master/circleci/build-test.sh)"
 deployment:
   release:
     tag: /^v[0-9]\..*$/

@@ -7,12 +7,12 @@ include $(CLEAR_VARS)
 
 
 # Enable SQLite extensions.
-LOCAL_CFLAGS += -DSQLITE_ENABLE_FTS5 
+LOCAL_CFLAGS += -DSQLITE_ENABLE_FTS5
 LOCAL_CFLAGS += -DSQLITE_ENABLE_RTREE
 LOCAL_CFLAGS += -DSQLITE_ENABLE_JSON1
 LOCAL_CFLAGS += -DSQLITE_ENABLE_FTS3
 
-# This is important - it causes SQLite to use memory for temp files. Since 
+# This is important - it causes SQLite to use memory for temp files. Since
 # Android has no globally writable temp directory, if this is not defined the
 # application throws an exception when it tries to create a temp file.
 #
@@ -33,19 +33,18 @@ else
 	LOCAL_CFLAGS += -DPACKED=""
 endif
 
-LOCAL_SRC_FILES:=                             \
+LOCAL_SRC_FILES:=                       \
 	android_database_SQLiteCommon.cpp     \
 	android_database_SQLiteConnection.cpp \
 	android_database_SQLiteGlobal.cpp     \
 	android_database_SQLiteDebug.cpp      \
-	JNIHelp.cpp JniConstants.cpp
+	JNIHelp.cpp JniConstants.cpp          \
+  sqlite3.c
 
-LOCAL_SRC_FILES += sqlite3.c
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH) $(LOCAL_PATH)/nativehelper/
 
 LOCAL_MODULE:= libsqliteX
-LOCAL_LDLIBS += -ldl -llog 
+LOCAL_LDLIBS += -ldl -llog
 
 include $(BUILD_SHARED_LIBRARY)
-

@@ -76,14 +76,24 @@ extern "C" int jniRegisterNativeMethods(C_JNIEnv* env, const char* className,
 
     scoped_local_ref<jclass> c(env, findClass(env, className));
     if (c.get() == NULL) {
+#ifdef __MINGW32__
+        char msg[512] = "";
+        sprintf(msg, "Native registration unable to find class '%s'; aborting...", className);
+#else
         char* msg;
         asprintf(&msg, "Native registration unable to find class '%s'; aborting...", className);
+#endif /* __MINGW32__ */
         e->FatalError(msg);
     }
 
     if ((*env)->RegisterNatives(e, c.get(), gMethods, numMethods) < 0) {
+#ifdef __MINGW32__
+        char msg[512] = "";
+        sprintf(msg, "RegisterNatives failed for '%s'; aborting...", className);
+#else
         char* msg;
         asprintf(&msg, "RegisterNatives failed for '%s'; aborting...", className);
+#endif /* __MINGW32__ */
         e->FatalError(msg);
     }
 
@@ -289,20 +299,25 @@ void jniLogException(C_JNIEnv* env, int priority, const char* tag, jthrowable ex
 }
 
 const char* jniStrError(int errnum, char* buf, size_t buflen) {
-#if __GLIBC__
-    // Note: glibc has a nonstandard strerror_r that returns char* rather than POSIX's int.
-    // char *strerror_r(int errnum, char *buf, size_t n);
-    return strerror_r(errnum, buf, buflen);
-#else
-    int rc = strerror_r(errnum, buf, buflen);
-    if (rc != 0) {
-        // (POSIX only guarantees a value other than 0. The safest
-        // way to implement this function is to use C++ and overload on the
-        // type of strerror_r to accurately distinguish GNU from POSIX.)
-        snprintf(buf, buflen, "errno %d", errnum);
-    }
+#ifdef __MINGW32__
+    snprintf(buf, buflen, "errno %d", errnum);
     return buf;
-#endif
+#else /* __MINGW32__ */
+  #if __GLIBC__
+      // Note: glibc has a nonstandard strerror_r that returns char* rather than POSIX's int.
+      // char *strerror_r(int errnum, char *buf, size_t n);
+      return strerror_r(errnum, buf, buflen);
+  #else
+      int rc = strerror_r(errnum, buf, buflen);
+      if (rc != 0) {
+          // (POSIX only guarantees a value other than 0. The safest
+          // way to implement this function is to use C++ and overload on the
+          // type of strerror_r to accurately distinguish GNU from POSIX.)
+          snprintf(buf, buflen, "errno %d", errnum);
+      }
+      return buf;
+  #endif
+#endif /* __MINGW32__ */
 }
 
 jobject jniCreateFileDescriptor(C_JNIEnv* env, int fd) {
@@ -338,4 +353,3 @@ jobject jniGetReferent(C_JNIEnv* env, jobject ref) {
     static jmethodID get = e->GetMethodID(JniConstants::referenceClass, "get", "()Ljava/lang/Object;");
     return (*env)->CallObjectMethod(e, ref, get);
 }
-

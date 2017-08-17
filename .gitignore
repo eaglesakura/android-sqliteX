@@ -8,3 +8,9 @@ cygdrive/
 /maven
 obj/
 src/main/libs/
+.dll/
+/*.dll
+/*.so
+/.linux.so
+/*.dylib
+.DS_Store
