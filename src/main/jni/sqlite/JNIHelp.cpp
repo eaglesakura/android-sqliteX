@@ -338,4 +338,3 @@ jobject jniGetReferent(C_JNIEnv* env, jobject ref) {
     static jmethodID get = e->GetMethodID(JniConstants::referenceClass, "get", "()Ljava/lang/Object;");
     return (*env)->CallObjectMethod(e, ref, get);
 }
-

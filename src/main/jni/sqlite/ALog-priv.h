@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 /*
-** Modified to support SQLite extensions by the SQLite developers: 
+** Modified to support SQLite extensions by the SQLite developers:
 ** sqlite-dev@sqlite.org.
 */
 
 #ifndef NATIVEHELPER_ALOGPRIV_H_
 #define NATIVEHELPER_ALOGPRIV_H_
 
-#include <android/log.h>
 
 #ifndef LOG_NDEBUG
-#ifdef NDEBUG
-#define LOG_NDEBUG 1
-#else
-#define LOG_NDEBUG 0
-#endif
-#endif
+  #include <android/log.h>
+  #ifdef NDEBUG
+    #define LOG_NDEBUG 1
+  #else /* NDEBUG */
+    #define LOG_NDEBUG 0
+  #endif  /* NDEBUG */
+#else /* LOG_NDEBUG */
+  #define __android_log_print(...) ((void)0)
+  #define __android_log_write(...) ((void)0)
+#endif /* LOG_NDEBUG */
 
 
 /*

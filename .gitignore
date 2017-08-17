@@ -8,3 +8,4 @@ cygdrive/
 /maven
 obj/
 src/main/libs/
+.dll/
