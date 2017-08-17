@@ -9,3 +9,4 @@ cygdrive/
 obj/
 src/main/libs/
 .dll/
+sqliteX.dll

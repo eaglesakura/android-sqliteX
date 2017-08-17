@@ -1,8 +1,7 @@
 package org.sqlite.database;
 
 import com.eaglesakura.android.devicetest.DeviceTestCase;
-import com.eaglesakura.android.devicetest.TestUtil;
-import com.eaglesakura.util.LogUtil;
+import com.eaglesakura.android.devicetest.util.DeviceTestUtil;
 import com.eaglesakura.util.RandomUtil;
 
 import org.junit.Test;
@@ -15,6 +14,7 @@ import org.sqlite.database.sqlite.SQLiteStatement;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.test.InstrumentationRegistry;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -31,8 +31,8 @@ public class SQLiteDatabaseTest extends DeviceTestCase {
     @Override
     public void onSetup() {
         super.onSetup();
-        DB_PATH = new File(TestUtil.getCacheDirectory(getContext()), RandomUtil.randShortString() + ".db");
-        LogUtil.out("DB", DB_PATH.getAbsolutePath());
+        DB_PATH = new File(DeviceTestUtil.getCacheDirectory(getContext()), RandomUtil.randShortString() + ".db");
+        Log.i("DB", DB_PATH.getAbsolutePath());
     }
 
     @Test
@@ -219,7 +219,7 @@ public class SQLiteDatabaseTest extends DeviceTestCase {
                 res = res + "." + x;
             }
         } else {
-            LogUtil.out("csr_test_1", "c==NULL");
+            Log.i("csr_test_1", "c==NULL");
         }
         assertEquals(res, expect);
 
@@ -237,7 +237,7 @@ public class SQLiteDatabaseTest extends DeviceTestCase {
             boolean bRes;
             for (bRes = c.moveToFirst(); bRes; bRes = c.moveToNext()) nRow++;
         } else {
-            LogUtil.out("csr_test_1", "c==NULL");
+            Log.i("csr_test_1", "c==NULL");
         }
         assertEquals("" + nRow, "15000");
 
