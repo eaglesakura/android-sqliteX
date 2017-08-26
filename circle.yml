@@ -31,6 +31,10 @@ deployment:
     tag: /^v[0-9]\..*$/
     commands:
       - ./gradlew bintrayUpload
+  feature:
+    branch: /^feature\/id\/.*$/
+    commands:
+      - ./gradlew bintrayUpload
   snapshot:
     branch: /^v[0-9]\..*$/
     commands:

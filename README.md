@@ -28,18 +28,41 @@ package名以外は基本的に同じインターフェースが提供されて�
 |package名変更 | android.database.sqlite | org.sqlite.database.sqlite |
 | 初期化 | - | org.sqlite.database.SQLiteX.install(context); |
 
+## UnitTest(PC, JavaVM)
+
+PCでUnitTestを行う場合は、別途PC用にビルドしたNative用ライブラリが必要となる。
+下記のGradleタスクでダウンロードが行える。
+
+```
+task installSQLiteX {
+    def SQLITE_X_VERSION = "v1.0.x"
+    def downloadURL
+    def fileName
+
+    if (Os.isFamily(Os.FAMILY_MAC)) {
+        downloadURL = "https://raw.githubusercontent.com/eaglesakura/android-sqliteX/${SQLITE_X_VERSION}/prebuilt/"
+        fileName = "libsqliteX.dylib"
+    } else if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        downloadURL = "https://raw.githubusercontent.com/eaglesakura/android-sqliteX/${SQLITE_X_VERSION}/prebuilt/"
+        fileName = "sqliteX.dll"
+    } else {
+        downloadURL = "https://raw.githubusercontent.com/eaglesakura/android-sqliteX/${SQLITE_X_VERSION}/prebuilt/"
+        fileName = "libsqliteX.so"
+    }
+
+    def dstFile = new File(fileName)
+    if (!dstFile.file) {
+        new File(fileName) << new URL("${downloadURL}${fileName}").openStream()
+        println "${fileName} installed"
+    }
+}
+```
+
 ## dependencies
 
 ```
-// build.gradle
-repositories {
-    // add maven repository
-    maven { url "http://eaglesakura.github.io/maven/" }
-}
-
 dependencies {
-    // add library, org.sqlite = 526 methods
-    compile 'com.eaglesakura:android-sqliteX:3.16.1.+'
+    compile 'com.eaglesakura:android-sqliteX:${version}'
 }
 ```
 

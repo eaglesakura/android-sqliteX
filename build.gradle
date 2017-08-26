@@ -1,8 +1,8 @@
 /**
  * 1.0.x   : SQLite 3.16.1 / AS 3.0対応
  */
- def ARTIFACT_VERSION = System.env.CIRCLE_TAG == null ?
-         "1.0" : System.env.CIRCLE_TAG.substring(System.env.CIRCLE_TAG.indexOf('v') + 1)
+def ARTIFACT_VERSION = System.env.CIRCLE_TAG == null ?
+        "1.0" : System.env.CIRCLE_TAG.substring(System.env.CIRCLE_TAG.indexOf('v') + 1)
 def SQLITE_VERSION = "3.16.1"
 def REPOSITORY_NAME = "maven"
 def BINTRAY_LICENSES = ["MIT"]
@@ -47,7 +47,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 26
 
         // Device Test
@@ -71,6 +71,11 @@ if (!hasProperty("EGLIBRARY_COMPILE_LOCAL")) {
 }
 
 dependencies {
+    /**
+     * Android Support Library
+     */
+    implementation "com.android.support:support-annotations:26.0.1"
+
     androidTestImplementation "com.android.support:support-v4:26.0.1"
     androidTestImplementation "com.android.support:appcompat-v7:26.0.1"
     androidTestImplementation "com.eaglesakura:android-commons:2.3.build-35"
