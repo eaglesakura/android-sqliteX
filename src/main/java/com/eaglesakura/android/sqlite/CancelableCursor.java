@@ -11,6 +11,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import java.util.concurrent.CancellationException;
+
 public class CancelableCursor implements Cursor {
     @NonNull
     final Cursor mCursor;
@@ -25,7 +27,7 @@ public class CancelableCursor implements Cursor {
 
     private void assertNotCanceled() {
         if (mSignal.isCanceled()) {
-            throw new CursorCanceledException("Cursor is canceled");
+            throw new CancellationException("Cursor is canceled");
         }
     }
 
@@ -263,9 +265,5 @@ public class CancelableCursor implements Cursor {
     @Override
     public Bundle respond(Bundle bundle) {
         return mCursor.respond(bundle);
-    }
-
-    public interface CancelSignal {
-        boolean isCanceled();
     }
 }

@@ -16,7 +16,10 @@
 
 package com.eaglesakura.android.sqlite.room;
 
+import com.eaglesakura.android.sqlite.CancelSignal;
+
 import android.arch.persistence.db.SupportSQLiteOpenHelper;
+import android.support.annotation.NonNull;
 
 /**
  * Implements {@link SupportSQLiteOpenHelper.Factory} using the SQLite implementation in the
@@ -24,12 +27,27 @@ import android.arch.persistence.db.SupportSQLiteOpenHelper;
  */
 @SuppressWarnings("unused")
 public class RoomSQLiteOpenHelperFactory implements SupportSQLiteOpenHelper.Factory {
+
+    @NonNull
+    CancelSignal mCancelSignal;
+
+    public RoomSQLiteOpenHelperFactory() {
+        this(null);
+    }
+
+    public RoomSQLiteOpenHelperFactory(CancelSignal cancelSignal) {
+        mCancelSignal = cancelSignal;
+        if (mCancelSignal == null) {
+            mCancelSignal = () -> false;
+        }
+    }
+
     @Override
     public SupportSQLiteOpenHelper create(SupportSQLiteOpenHelper.Configuration configuration) {
         return new RoomSQLiteOpenHelper(
                 configuration.context, configuration.name,
                 configuration.version, db -> {
-        }, configuration.callback
+        }, configuration.callback, mCancelSignal
         );
     }
 }

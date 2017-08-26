@@ -16,6 +16,8 @@
 
 package com.eaglesakura.android.sqlite.room;
 
+import com.eaglesakura.android.sqlite.CancelSignal;
+
 import org.sqlite.database.DatabaseErrorHandler;
 import org.sqlite.database.sqlite.SQLiteDatabase;
 import org.sqlite.database.sqlite.SQLiteOpenHelper;
@@ -24,6 +26,7 @@ import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.db.SupportSQLiteOpenHelper;
 import android.content.Context;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 
 import java.io.File;
@@ -31,9 +34,13 @@ import java.io.File;
 class RoomSQLiteOpenHelper implements SupportSQLiteOpenHelper {
     private final OpenHelper mDelegate;
 
+    private final CancelSignal mCancelSignal;
+
     RoomSQLiteOpenHelper(Context context, String name, int version,
                          DatabaseErrorHandler errorHandler,
-                         Callback callback) {
+                         Callback callback,
+                         @NonNull CancelSignal signal) {
+        mCancelSignal = signal;
         mDelegate = createDelegate(context, name, version, errorHandler, callback);
     }
 
@@ -53,7 +60,7 @@ class RoomSQLiteOpenHelper implements SupportSQLiteOpenHelper {
         return new OpenHelper(context, name, null, version, errorHandler) {
             @Override
             public void onCreate(SQLiteDatabase sqLiteDatabase) {
-                mWrappedDb = new RoomSQLiteDatabase(sqLiteDatabase);
+                mWrappedDb = new RoomSQLiteDatabase(sqLiteDatabase, mCancelSignal);
                 callback.onCreate(mWrappedDb);
             }
 
@@ -105,7 +112,7 @@ class RoomSQLiteOpenHelper implements SupportSQLiteOpenHelper {
         mDelegate.close();
     }
 
-    abstract static class OpenHelper extends SQLiteOpenHelper {
+    abstract class OpenHelper extends SQLiteOpenHelper {
 
         RoomSQLiteDatabase mWrappedDb;
 
@@ -127,7 +134,7 @@ class RoomSQLiteOpenHelper implements SupportSQLiteOpenHelper {
 
         RoomSQLiteDatabase getWrappedDb(SQLiteDatabase sqLiteDatabase) {
             if (mWrappedDb == null) {
-                mWrappedDb = new RoomSQLiteDatabase(sqLiteDatabase);
+                mWrappedDb = new RoomSQLiteDatabase(sqLiteDatabase, mCancelSignal);
             }
             return mWrappedDb;
         }

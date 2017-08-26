@@ -1,5 +1,6 @@
 package com.eaglesakura.android.sqlite.room;
 
+import com.eaglesakura.android.sqlite.CancelSignal;
 import com.eaglesakura.android.sqlite.CancelableCursor;
 
 import org.sqlite.database.sqlite.SQLiteCursor;
@@ -25,10 +26,14 @@ import java.util.Locale;
 
 public class RoomSQLiteDatabase implements SupportSQLiteDatabase {
     @NonNull
-    SQLiteDatabase mDatabase;
+    final SQLiteDatabase mDatabase;
 
-    RoomSQLiteDatabase(@NonNull SQLiteDatabase database) {
+    @NonNull
+    final CancelSignal mCancelSignal;
+
+    RoomSQLiteDatabase(@NonNull SQLiteDatabase database, @NonNull CancelSignal cancelSignal) {
         mDatabase = database;
+        mCancelSignal = cancelSignal;
     }
 
     @Override
@@ -168,20 +173,22 @@ public class RoomSQLiteDatabase implements SupportSQLiteDatabase {
 
     @Override
     public Cursor query(SupportSQLiteQuery supportQuery, CancellationSignal cancellationSignal) {
-        return mDatabase.rawQueryWithFactory(new SQLiteDatabase.CursorFactory() {
-            @Override
-            public Cursor newCursor(SQLiteDatabase db, SQLiteCursorDriver masterQuery, String editTable, SQLiteQuery query) {
-                RoomSQLiteProgram program = new RoomSQLiteProgram(query);
-                supportQuery.bindTo(program);
-                SQLiteCursor cursor = new SQLiteCursor(masterQuery, editTable, query);
-                return new CancelableCursor(cursor, () -> {
-                    if (cancellationSignal != null) {
-                        return cancellationSignal.isCanceled();
-                    } else {
-                        return false;
-                    }
-                });
-            }
+        return mDatabase.rawQueryWithFactory((SQLiteDatabase db, SQLiteCursorDriver masterQuery, String editTable, SQLiteQuery query) -> {
+            RoomSQLiteProgram program = new RoomSQLiteProgram(query);
+            supportQuery.bindTo(program);
+            SQLiteCursor cursor = new SQLiteCursor(masterQuery, editTable, query);
+            return new CancelableCursor(cursor, () -> {
+                // 先行キャンセル
+                if (mCancelSignal.isCanceled()) {
+                    return true;
+                }
+
+                if (cancellationSignal != null) {
+                    return cancellationSignal.isCanceled();
+                } else {
+                    return false;
+                }
+            });
         }, supportQuery.getSql(), EMPTY_STRING_ARRAY, null);
     }
 
